@@ -156,7 +156,7 @@ exports.check = (req, res, next) => {
 
 exports.randomplay = (req, res, next) => {
     req.session.alreadyPlayed = req.session.alreadyPlayed || [];
-    const scor = req.session.alreadyPlayed.length;
+    const score = req.session.alreadyPlayed.length;
     const whereOpt = {id: {[Sequelize.Op.notIn] : req.session.alreadyPlayed}} ;
     models.quiz.count({where:whereOpt})
    .then(count => {
@@ -173,12 +173,12 @@ exports.randomplay = (req, res, next) => {
         if(quiz === undefined) {
             req.session.alreadyPlayed = [];
             res.render('quizzes/random_nomore', {
-                score: scor
+                score: score
             });
         } else {
             res.render('quizzes/random_play', {
                 quiz: quiz,
-                score: scor
+                score: score
             });
         }
     })
@@ -191,9 +191,9 @@ exports.randomcheck = (req, res, next) => {
     try{
     const {quiz, query} = req;
     req.session.alreadyPlayed = req.session.alreadyPlayed || [];
-    const act_ans = query.answer || "";
+    const actual_answer = query.answer || "";
     const right_answer = quiz.answer;
-    const result = act_ans.toLowerCase().trim() === right_answer.toLowerCase().trim();
+    const result = actual_answer.toLowerCase().trim() === right_answer.toLowerCase().trim();
     if (result){
         if(req.session.alreadyPlayed.indexOf(req.quiz.id) === -1){ 
             req.session.alreadyPlayed.push(req.quiz.id);
@@ -203,7 +203,7 @@ exports.randomcheck = (req, res, next) => {
     if(!result){
         req.session.alreadyPlayed = [];
     }
-    res.render('quizzes/random_result', {act_ans, result, score});
+    res.render('quizzes/random_result', {actual_answer, result, score});
     } catch (error){
         next(error);
     }
